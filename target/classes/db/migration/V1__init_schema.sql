@@ -368,7 +368,7 @@ INSERT INTO usuarios (documento, nombres, apellidos, correo, password_hash, esta
         'Admin',
         'Principal',
         'superadmin@laboratorioxyz.com',
-        '$2a$10$zkd5jUNaNMrKcFxM.kZQ2e65ZxqMSInlquA5w/tgcTYPLwPr4dtoC',
+        '$2a$12$e8k4hCg8jP1u6B/f0x5l7eK9bE9t7F1Z2vX9/Q.x1a9.o9o0o1o2u',
         'ACTIVO',
         0,
         (SELECT id FROM roles WHERE nombre = 'ADMINISTRADOR')
