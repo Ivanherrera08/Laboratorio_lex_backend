@@ -1,5 +1,6 @@
 package Laboratorio_lex.services;
 
+import Laboratorio_lex.dto.HistorialAccesoDTO;
 import Laboratorio_lex.dto.VerificarAccesoRequest;
 import Laboratorio_lex.dto.VerificarAccesoResponse;
 import Laboratorio_lex.models.AreaRestringida;
@@ -19,7 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AccesoService {
@@ -117,5 +120,39 @@ public class AccesoService {
         historialRepository.save(historial);
         return new VerificarAccesoResponse(false, ResultadoAcceso.NO_REGISTRADO,
                 "Credencial no registrada en el sistema.", null, area.getNombre());
+    }
+
+    @Transactional(readOnly = true)
+    public List<HistorialAccesoDTO> listarHistorial() {
+        return historialRepository.findAllByOrderByTimestampDesc().stream()
+                .map(h -> {
+                    String nombreCompleto = null;
+                    Long empId = null;
+                    if (h.getEmpleado() != null) {
+                        empId = h.getEmpleado().getId();
+                        nombreCompleto = h.getEmpleado().getNombres() + " " + h.getEmpleado().getApellidos();
+                    } else if (h.getNumeroDocumentoIngresado() != null) {
+                        Optional<Usuario> uOpt = usuarioRepository.findByDocumento(h.getNumeroDocumentoIngresado());
+                        if (uOpt.isPresent()) {
+                            Usuario u = uOpt.get();
+                            String rol = u.getRol() != null ? u.getRol().getNombre() : "SISTEMA";
+                            nombreCompleto = u.getNombres() + " " + u.getApellidos() + " (" + rol + ")";
+                        }
+                    }
+
+                    return new HistorialAccesoDTO(
+                            h.getId(),
+                            empId,
+                            nombreCompleto,
+                            h.getArea() != null ? h.getArea().getId() : null,
+                            h.getArea() != null ? h.getArea().getNombre() : null,
+                            h.getNumeroDocumentoIngresado(),
+                            h.getCodigoTarjetaIngresado(),
+                            h.getResultadoAcceso() != null ? h.getResultadoAcceso().name() : null,
+                            h.getMotivoDenegacion(),
+                            h.getTimestamp()
+                    );
+                })
+                .collect(Collectors.toList());
     }
 }

@@ -3,6 +3,7 @@ Laboratorio_lex/controllers/AccesoController.class
 Laboratorio_lex/models/TokenRecuperacion.class
 Laboratorio_lex/services/AccesoService.class
 Laboratorio_lex/models/Empleado.class
+Laboratorio_lex/dto/HistorialAccesoDTO.class
 Laboratorio_lex/services/AuthService.class
 Laboratorio_lex/dto/LoginRequest.class
 Laboratorio_lex/models/Departamento.class

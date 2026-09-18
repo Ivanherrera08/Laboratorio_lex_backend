@@ -10,9 +10,9 @@ ON CONFLICT (nombre) DO NOTHING;
 -- 2. Crear Usuarios (Contraseña: Admin123!)
 -- Hash generado con BCrypt de 'Admin123!'
 INSERT INTO zone_control.usuarios (documento, nombres, apellidos, correo, password_hash, estado, intentos_fallidos, rol_id, updated_at) VALUES 
-('10001234', 'Dr. Roberto', 'Gomez', 'admin@laboratorioxyz.com', '$2a$10$C8HhP7mIINgV1K2sNqjVz.i8n2DqN/J/jD/G/JvL7T3x/x2G/9.Fm', 'ACTIVO', 0, 1, CURRENT_TIMESTAMP),
-('10002345', 'Maria Fernanda', 'Londono', 'gestor@laboratorioxyz.com', '$2a$10$C8HhP7mIINgV1K2sNqjVz.i8n2DqN/J/jD/G/JvL7T3x/x2G/9.Fm', 'ACTIVO', 0, 2, CURRENT_TIMESTAMP),
-('10003456', 'Ing. Alejandro', 'Torres', 'supervisor@laboratorioxyz.com', '$2a$10$C8HhP7mIINgV1K2sNqjVz.i8n2DqN/J/jD/G/JvL7T3x/x2G/9.Fm', 'ACTIVO', 0, 3, CURRENT_TIMESTAMP)
+('10001234', 'Dr. Roberto', 'Gomez', 'admin@laboratorioxyz.com', '$2a$10$zkd5jUNaNMrKcFxM.kZQ2e65ZxqMSInlquA5w/tgcTYPLwPr4dtoC', 'ACTIVO', 0, 1, CURRENT_TIMESTAMP),
+('10002345', 'Maria Fernanda', 'Londono', 'gestor@laboratorioxyz.com', '$2a$10$zkd5jUNaNMrKcFxM.kZQ2e65ZxqMSInlquA5w/tgcTYPLwPr4dtoC', 'ACTIVO', 0, 2, CURRENT_TIMESTAMP),
+('10003456', 'Ing. Alejandro', 'Torres', 'supervisor@laboratorioxyz.com', '$2a$10$zkd5jUNaNMrKcFxM.kZQ2e65ZxqMSInlquA5w/tgcTYPLwPr4dtoC', 'ACTIVO', 0, 3, CURRENT_TIMESTAMP)
 ON CONFLICT (documento) DO NOTHING;
 
 -- 3. Crear Departamento y Áreas
