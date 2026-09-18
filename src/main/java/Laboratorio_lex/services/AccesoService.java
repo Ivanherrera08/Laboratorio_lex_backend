@@ -51,7 +51,32 @@ public class AccesoService {
         }
         historial.setArea(area);
 
-        // 2. Buscar primero en la tabla de empleados (personal de producción)
+        // 2. Buscar primero en la tabla de usuarios del sistema (administradores, supervisores, gestores)
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByDocumento(request.getDocumento());
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            String nombreCompleto = usuario.getNombres() + " " + usuario.getApellidos();
+            String rolNombre = (usuario.getRol() != null) ? usuario.getRol().getNombre() : "SISTEMA";
+
+            // Verificar estado del usuario del sistema
+            if (usuario.getEstado() != EstadoUsuario.ACTIVO) {
+                historial.setResultadoAcceso(ResultadoAcceso.DENEGADO);
+                historial.setMotivoDenegacion("La cuenta de usuario del sistema se encuentra " + usuario.getEstado());
+                historialRepository.save(historial);
+                return new VerificarAccesoResponse(false, ResultadoAcceso.DENEGADO,
+                        "Acceso denegado. Cuenta " + rolNombre + " " + usuario.getEstado() + ".",
+                        nombreCompleto, area.getNombre());
+            }
+
+            // Los usuarios del sistema (admin/supervisor/gestor) tienen acceso maestro a todas las áreas
+            historial.setResultadoAcceso(ResultadoAcceso.AUTORIZADO);
+            historialRepository.save(historial);
+            return new VerificarAccesoResponse(true, ResultadoAcceso.AUTORIZADO,
+                    "Acceso concedido. " + rolNombre + " — Acceso maestro al sistema.",
+                    nombreCompleto, area.getNombre());
+        }
+
+        // 3. Buscar en la tabla de empleados (personal de producción)
         Optional<Empleado> empleadoOpt = empleadoRepository.findByNumeroDocumento(request.getDocumento());
         if (empleadoOpt.isPresent()) {
             Empleado empleado = empleadoOpt.get();
@@ -84,31 +109,6 @@ public class AccesoService {
             return new VerificarAccesoResponse(true, ResultadoAcceso.AUTORIZADO,
                     "Acceso concedido exitosamente.",
                     empleado.getNombres() + " " + empleado.getApellidos(), area.getNombre());
-        }
-
-        // 3. Buscar en la tabla de usuarios del sistema (administradores, supervisores, gestores)
-        Optional<Usuario> usuarioOpt = usuarioRepository.findByDocumento(request.getDocumento());
-        if (usuarioOpt.isPresent()) {
-            Usuario usuario = usuarioOpt.get();
-            String nombreCompleto = usuario.getNombres() + " " + usuario.getApellidos();
-            String rolNombre = (usuario.getRol() != null) ? usuario.getRol().getNombre() : "SISTEMA";
-
-            // Verificar estado del usuario del sistema
-            if (usuario.getEstado() != EstadoUsuario.ACTIVO) {
-                historial.setResultadoAcceso(ResultadoAcceso.DENEGADO);
-                historial.setMotivoDenegacion("La cuenta de usuario del sistema se encuentra " + usuario.getEstado());
-                historialRepository.save(historial);
-                return new VerificarAccesoResponse(false, ResultadoAcceso.DENEGADO,
-                        "Acceso denegado. Cuenta " + rolNombre + " " + usuario.getEstado() + ".",
-                        nombreCompleto, area.getNombre());
-            }
-
-            // Los usuarios del sistema (admin/supervisor/gestor) tienen acceso maestro a todas las áreas
-            historial.setResultadoAcceso(ResultadoAcceso.AUTORIZADO);
-            historialRepository.save(historial);
-            return new VerificarAccesoResponse(true, ResultadoAcceso.AUTORIZADO,
-                    "Acceso concedido. " + rolNombre + " — Acceso maestro al sistema.",
-                    nombreCompleto, area.getNombre());
         }
 
         // 4. No encontrado en ninguna tabla
